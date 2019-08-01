@@ -42,7 +42,9 @@ def getTitleByID(titleType="english", id=1):
     else:
         return json_obj['data']['Media']['title']['english']
 
-def getAnimeTitles(title="Naruto"):
+
+
+def getAnimeTitles(title="Cowboy Bebop"):
     titleTypes = getTitleTypes()
     query = """
     query ($title: String) {
@@ -64,5 +66,52 @@ def getAnimeTitles(title="Naruto"):
 
     return [json_obj['data']['Media']['title'][i] for i in titleTypes]
 
-print(getTitleByID())
-print(getAnimeTitles())
+"""Return the current release status of an anime (default) or manga. 
+
+"""
+def getStatus(title="Cowboy Bebop", type="ANIME"):
+    query = """
+    query ($title: String) {
+    Media (search: $title, type:ANIME) {
+        status
+    }
+    }
+    """
+    variables = {
+        'type': type
+    }
+
+    json_obj = buildQuery(query, variables)
+    #printJsonObj(json_obj)
+
+    return json_obj['data']['Media']['status']
+
+def getDates(title="Cowboy Bebop"):
+    query = """
+    query ($title: String) {
+    Media (search: $title, type:ANIME) {
+        startDate {
+            year
+            month
+            day
+        }
+        endDate {
+            year
+            month
+            day
+        }
+    }
+    }
+    """
+    variables = {
+        'title': title
+    }
+    json_obj = buildQuery(query, variables)
+    
+    dateList = []
+    dateList.append(json_obj['data']['Media']['startDate'])
+    dateList.append(json_obj['data']['Media']['endDate'])
+    
+    return dateList
+
+print(getDates("Violet Evergarden"))
