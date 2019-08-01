@@ -8,8 +8,12 @@ def getTitleTypes():
     return {"english", "romaji", "native"}
 
 def buildQuery(query, variables):
-    json = {'query':query, 'variables':variables}
-    return json
+    response = requests.post(constants.getURL(), json={'query':query, 'variables':variables})
+    json_obj = json.loads(response.content)
+    return json_obj
+
+def printJsonObj(json_obj):
+    print(json.dumps(json_obj, indent=4, sort_keys=True))
 
 def getTitleByID(titleType="english", id=1):
     validTitles = getTitleTypes()
@@ -30,10 +34,8 @@ def getTitleByID(titleType="english", id=1):
         'id': max(1, id)
     }
 
-    response = requests.post(constants.getURL(), json=buildQuery(query, variables)) #{'query':query, 'variables':variables}
-    json_obj = json.loads(response.content)
-
-    # print(json.dumps(json_obj, indent=4, sort_keys=True))
+    json_obj = buildQuery(query, variables)
+    #printJsonObj(json_obj)
 
     if (titleType in validTitles):
         return json_obj['data']['Media']['title'][titleType]
@@ -57,9 +59,10 @@ def getAnimeTitles(title="Naruto"):
         'title': title
     }
 
-    response = requests.post(constants.getURL(), json=buildQuery(query, variables))
-    json_obj = json.loads(response.content)
-
-    #print(json.dumps(json_obj, indent=4, sort_keys=4))
+    json_obj = buildQuery(query, variables)
+    #printJsonObj(json_obj)
 
     return [json_obj['data']['Media']['title'][i] for i in titleTypes]
+
+print(getTitleByID())
+print(getAnimeTitles())
