@@ -111,7 +111,28 @@ def getDates(title="Cowboy Bebop"):
     dateList = []
     dateList.append(json_obj['data']['Media']['startDate'])
     dateList.append(json_obj['data']['Media']['endDate'])
-    
+
     return dateList
 
-print(getDates("Violet Evergarden"))
+def getSeasonYear(title="Cowboy Bebop"):
+    query = """
+    query ($title: String) {
+    Media (search: $title, type:ANIME) {
+            season
+            startDate {
+                year
+        }
+    }
+    }
+    """
+    variables = {
+        'title': title
+    }
+    json_obj = buildQuery(query, variables)
+    
+    stringOut = str(json_obj['data']['Media']['season']).capitalize() + " " + str(json_obj['data']['Media']['startDate']['year'])
+
+    return stringOut
+
+# print(getDates("Violet Evergarden"))
+print(getSeasonYear("Violet Evergarden"))
